@@ -3,6 +3,7 @@ window.addEventListener('DOMContentLoaded', (event) =>{
 
 
     let mouse = false
+    let tapper = false
 
     let enemies = []
     let score = 0
@@ -89,7 +90,7 @@ document.addEventListener('keyup', (event) => {
     window.removeEventListener("mousehold", beamdrag);
  })
 
-function beamdrag(e) {
+ function beamdrag(e) {
     flex = tutorial_canvas.getBoundingClientRect();
 
 
@@ -105,6 +106,90 @@ function beamdrag(e) {
   }
 
 
+  function beamdragx(e) {
+    flex = tutorial_canvas.getBoundingClientRect();
+
+
+    for(let q = 0; q<enemies.length; q++){
+        enemies[q].body.color =getRandomLightColor()
+    }
+
+
+    xs = e.targetTouches[0].pageX - flex.left;
+    ys = e.targetTouches[0].pageY - flex.top;
+
+
+    // xs = Math.random()*tutorial_canvas.width// touchItem.clientX// - flex.left;
+    // ys = Math.random()*tutorial_canvas.height//touchItem.clientY// - flex.top;
+      tap.x = xs
+      tap.y = ys
+
+      tap.body = tap
+
+      mainguy.firing+= 1
+      mainguy.gun.fire(tap)
+  }
+
+
+
+ 
+ window.addEventListener('touchstart', e => {
+
+    flex = tutorial_canvas.getBoundingClientRect();
+
+
+    xs = e.targetTouches[0].pageX - flex.left;
+    ys = e.targetTouches[0].pageY - flex.top;
+      tip.x = xs
+      tip.y = ys
+
+      tap.body = tap
+
+    if(mainguy.health ==0){
+        if(squarecircle(restart, tap)){
+            enemies = []
+            score = 0
+            mainguy.body.x = 350
+            mainguy.body.y = 350
+            mainguy.shots = []
+            mainguy.deathrays = []
+            mainguy.health = 1
+            enemyspawn = 0.009
+        }
+    }
+
+    //   mainguy.firing+= 1
+    //   mainguy.gun.fire(tip)
+
+      tapper = true
+
+      window.addEventListener('touchmove', beamdragx);
+      window.addEventListener('touchhold', beamdragx);
+    
+ });    
+
+ window.addEventListener('touchend', e => {
+
+
+    flex = tutorial_canvas.getBoundingClientRect();
+
+
+    xs = e.targetTouches[0].pageX - flex.left;
+    ys = e.targetTouches[0].pageY - flex.top;
+      tip.x = xs
+      tip.y = ys
+
+      tap.body = tap
+    // jumping = 0
+    tapper = false
+   window.removeEventListener("touchmove", beamdrag);
+   window.removeEventListener('touchhold', beamdrag);
+    
+ });
+
+
+
+
   class Gun{
       constructor(owner){
         this.rate =  5
@@ -114,6 +199,7 @@ function beamdrag(e) {
         this.range = 25
       }
       fire(tip){
+        //   console.log(tap, tip)
       if(this.owner.firing%this.rate == 0){
             this.owner.shots[ this.owner.shots.length] = new Circle(this.owner.body.x,this.owner.body.y, this.bulletsize,"#ffffff") // make the bullet
             this.owner.shots[this.owner.shots.length-1].health = this.range  //This controlls how far the bullet will go
@@ -383,6 +469,11 @@ function beamdrag(e) {
                         mainguy.firing++
                         if(mainguy.firing%mainguy.gun.rate == 0){
                             mainguy.gun.fire(tip)
+                        }
+                    }else if(tapper == true){
+                        mainguy.firing++
+                        if(mainguy.firing%mainguy.gun.rate == 0){
+                            mainguy.gun.fire(tap)
                         }
                     }
             
